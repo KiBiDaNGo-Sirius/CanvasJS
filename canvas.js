@@ -1,9 +1,24 @@
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
-var StartAndEndPoint = [[0,300,400,300],[400,300,500,200],[400,300,500,400],[500,200,700,200],[500,400,700,400]];//[Sx,Sy,Ex,Ey]
-
+var StartAndEndPoint = [[0,300,400,300]];//[Sx,Sy,Ex,Ey]
 var Cwidth = 1200;
 var Cheight = 600;
+var DiagonalLength = 100;
+var BranchCount = 2;
+
+function MakeBranch(BranchNum){
+    var X = StartAndEndPoint[BranchNum][2];
+    var Y = StartAndEndPoint[BranchNum][3];
+    
+    console.log(BranchCount);
+    DChange = DiagonalLength*Math.E/BranchCount
+    console.log(X,Y)
+    var addPoints = [[X,Y,X+DChange,Y+DChange],[X,Y,X+DChange,Y-DChange],[X+DChange,Y+DChange,X+400,Y+DChange],[X+DChange,Y-DChange,X+400,Y-DChange]];
+    console.log(addPoints);
+    console.log(StartAndEndPoint);
+    StartAndEndPoint = StartAndEndPoint.concat(addPoints);
+    BranchCount += 1;
+}
 
 function FirstDrow(){
     for(let i = 0;i<StartAndEndPoint.length;i++){
@@ -24,10 +39,11 @@ function onClick(e) {
     
 }
   
-canvas.addEventListener('mousedown', onDown, false);
-canvas.addEventListener('mouseup', onUp, false);
 canvas.addEventListener('click', onClick, false);
-canvas.addEventListener('mouseover', onOver, false);
-canvas.addEventListener('mouseout', onOut, false);
+
 ChangeCanvasSize()
+MakeBranch(0)
+MakeBranch(4)
+MakeBranch(3)
 FirstDrow()
+console.log(StartAndEndPoint);
