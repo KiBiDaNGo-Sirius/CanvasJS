@@ -1,12 +1,23 @@
+//canvas情報取得だニャン
 var canvas = document.getElementById("canvas");
-var ctx = canvas.getContext("2d");
-var StartAndEndPoint = [[0,300,400,300]];//[Sx,Sy,Ex,Ey]
-var EndPoints = [[400,300]];//list of End of Branch
-var Cwidth = 1800;
-var Cheight = 600;
-var DiagonalLength = 100;
+var ctx = canvas.getContext("2d"); //何か描画する際は ctx.　にするにゃん
+var Cwidth = 1800; //初期幅ニャン
+var Cheight = 600; //初期高さニャン
 
-var EdittingBranch = 0;
+//シナリオ図の作成用変数だニャン
+var StartAndEndPoint = [[0,300,400,300]]; //[Sx,Sy,Ex,Ey]　線の終始
+var EndPoints = [[400,300]]; //list of End of Branch　枝の最後
+var DiagonalLength = 200; //次の枝と枝の幅の初期値だニャン 200x2
+var LineLength = 400; //枝の長さだニャン
+var EdittingBranch = 0; //編集する枝のindex保管用変数だニャン
+
+//canvas上でのマウス操作時の情報取得だニャン
+canvas.addEventListener('click', onClick, false);
+
+//枝編集ボタンを押したときのダイアログなどの変数だニャン
+dialog = document.querySelector('dialog');
+btn_close = document.getElementById('close');
+btn_close.addEventListener('click',DialogClose,false);
 
 function MakeBranch(BranchNum){
     var X = EndPoints[BranchNum][0];
@@ -17,9 +28,9 @@ function MakeBranch(BranchNum){
     while(Math.pow(2,BranchCount)-1<=(EndPoints.length)){
         BranchCount += 1;
     }
-    DChange = DiagonalLength/BranchCount;
+    DChange = DiagonalLength/Math.pow(2,BranchCount-1);
     console.log(X,Y);
-    var addPoints = [[X,Y,X+DChange,Y+DChange],[X,Y,X+DChange,Y-DChange],[X+DChange,Y+DChange,X+400,Y+DChange],[X+DChange,Y-DChange,X+400,Y-DChange]];
+    var addPoints = [[X,Y,X+DChange,Y+DChange],[X,Y,X+DChange,Y-DChange],[X+DChange,Y+DChange,X+LineLength,Y+DChange],[X+DChange,Y-DChange,X+LineLength,Y-DChange]];
     var addEnds = [[addPoints[2][2],addPoints[2][3]],[addPoints[3][2],addPoints[3][3]]]; // Each End Points
     console.log("Branch",BranchCount);
     console.log("Befor",EndPoints);
@@ -95,12 +106,6 @@ function DialogClose(){
     EdittingBranch = 0;
     dialog.close();
 }
-
-
-canvas.addEventListener('click', onClick, false);
-dialog = document.querySelector('dialog');
-btn_close = document.getElementById('close');
-btn_close.addEventListener('click',DialogClose,false);
 
 ChangeCanvasSize()
 MakeBranch(0)
