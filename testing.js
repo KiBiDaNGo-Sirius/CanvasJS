@@ -30,8 +30,8 @@ function MakeBranch(BranchNum){
     }
     DChange = DiagonalLength/Math.pow(2,BranchCount-1);
     console.log(X,Y);
-    var addPoints = [[X,Y,X+DChange,Y+DChange],[X,Y,X+DChange,Y-DChange],[X+DChange,Y+DChange,X+LineLength,Y+DChange],[X+DChange,Y-DChange,X+LineLength,Y-DChange]];
-    var addEnds = [[addPoints[2][2],addPoints[2][3]],[addPoints[3][2],addPoints[3][3]]]; // Each End Points
+    var addPoints = [[X,Y,X+DChange,Y-DChange],[X+DChange,Y-DChange,X+LineLength,Y-DChange],[X,Y,X+DChange,Y+DChange],[X+DChange,Y+DChange,X+LineLength,Y+DChange]];
+    var addEnds = [[addPoints[1][2],addPoints[1][3]],[addPoints[3][2],addPoints[3][3]]]; // Each End Points
     console.log("Branch",BranchCount);
     console.log("Befor",EndPoints);
     console.log("add",addEnds);
@@ -42,7 +42,33 @@ function MakeBranch(BranchNum){
 }
 
 function DelBranch(){
-    console.log("del")
+    //var StartPoints = [StartAndEndPoint[EdittingBranch*2-1][0],StartAndEndPoint[EdittingBranch*2-1][1]]; #ここまで消すべきか相談
+    //var BeforEnd = TwoDindex(EndPoints,StartPoints);
+    //console.log(EndPoints);
+    //console.log("BF",BeforEnd,"SP",StartPoints);
+    var OtherEndPoint;
+    if(EdittingBranch%2==1){
+        OtherEndPoint = [StartAndEndPoint[EdittingBranch*2+2][2],StartAndEndPoint[EdittingBranch*2+2][3]]
+        StartAndEndPoint.splice(EdittingBranch*2-1,4);        
+    }else{
+        OtherEndPoint = [StartAndEndPoint[EdittingBranch*2-2][2],StartAndEndPoint[EdittingBranch*2-2][3]]
+        StartAndEndPoint.splice(EdittingBranch*2-3,4);
+    }
+    var OtherEnd = TwoDindex(EndPoints,OtherEndPoint);
+    console.log(OtherEndPoint)
+    EndPoints.splice(EdittingBranch,1);
+    EndPoints.splice(OtherEnd,1);
+    //EndPoints.splice(BeforEnd,1);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    FirstDrow();
+    DrowBox();
+    console.log("del");
+    console.log("deled",EndPoints);
+}
+function AddBranch(){
+    MakeBranch(EdittingBranch);
+    FirstDrow();
+    DrowBox();
 }
 
 function FirstDrow(){
@@ -95,22 +121,27 @@ function DialogClose(){
     var RadioCondition = RadioB.condition ;
     var RValue = RadioCondition.value ;
     console.log(RValue)
-    if(RValue = "add"){
-        MakeBranch(EdittingBranch);
-        FirstDrow()
-        DrowBox()
+    if(RValue == "add"){
+        AddBranch();
     }
-    else if(RValue = "del"){
-        DelBranch(EdittingBranch);
+    else if(RValue == "del"){
+        DelBranch();
     }
     EdittingBranch = 0;
     dialog.close();
 }
 
+function TwoDindex(List,Elments){
+    for(let i = 0;i<List.length;i++){
+        if(Elments[0]==List[i][0] && Elments[1]==List[i][1]){
+            return i
+        }
+    }
+    return "error"
+}
+
 ChangeCanvasSize()
 MakeBranch(0)
-MakeBranch(1)
-MakeBranch(2)
 FirstDrow()
 DrowBox()
 console.log(StartAndEndPoint);
