@@ -24,10 +24,7 @@ function onClick(e) {
     
 }
   
-canvas.addEventListener('mousedown', onDown, false);
-canvas.addEventListener('mouseup', onUp, false);
+
 canvas.addEventListener('click', onClick, false);
-canvas.addEventListener('mouseover', onOver, false);
-canvas.addEventListener('mouseout', onOut, false);
 ChangeCanvasSize()
 FirstDrow()

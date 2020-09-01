@@ -61,6 +61,17 @@ function onClick(e) {
 
 function OnClickEndPoint(){
     console.log("clickEndPoint")
+    var objDlg = new Window("dialog", "ダイアログのタイトル", [0,0,400,250]);
+    //　固定テキスト
+    var objStText01 = objDlg.add("statictext", [20,20,380,40], "固定テキスト");
+    //　テキストボックス
+    var objTxtbox01= objDlg.add("edittext", [20, 70, 315, 90], "入力してください。");
+    //　チェックボックス
+    var objChkbox01= objDlg.add("checkbox", [30, 120, 140, 140], "チェック項目");
+    //　ラジオボタン
+    var objBtn01= objDlg.add("radiobutton", [30, 150, 140, 170], "ボタン1");
+    var objBtn02= objDlg.add("radiobutton", [130, 150, 240, 170], "ボタン2");
+    
 }
 
 function DrowBox(){
