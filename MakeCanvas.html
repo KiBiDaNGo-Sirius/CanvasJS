@@ -9,6 +9,17 @@
     </head>
     <body>
         <canvas id="canvas"></canvas>
+        <!--Dialog page つまり　ここで枝の追加とかさくじょとかするにゃん-->
+        <dialog>
+            <p>なにをしますか？</p>
+            <form id ="RadioBs">
+                <input type="radio" name="condition" value="add" />追加
+                <input type="radio" name="condition" value="del"/>削除
+                <input type="radio" name="condition" value="nothing"/>何もしない
+            </form>
+            <button id="close">実行</button>
+        </dialog>
+        <!--lode JavaScript srcに注意-->
         <script type="text/javascript" src="testing.js" ></script>
     </body>
 </html>

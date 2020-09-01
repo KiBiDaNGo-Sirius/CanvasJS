@@ -2,30 +2,36 @@ var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d");
 var StartAndEndPoint = [[0,300,400,300]];//[Sx,Sy,Ex,Ey]
 var EndPoints = [[400,300]];//list of End of Branch
-var Cwidth = 1200;
+var Cwidth = 1800;
 var Cheight = 600;
 var DiagonalLength = 100;
 
+var EdittingBranch = 0;
+
 function MakeBranch(BranchNum){
-    var X = StartAndEndPoint[BranchNum][2];
-    var Y = StartAndEndPoint[BranchNum][3];
+    var X = EndPoints[BranchNum][0];
+    var Y = EndPoints[BranchNum][1];
     var BranchCount = 0;
-    console.log("WTF")
+    console.log("WTF");
     console.log(Math.pow(2,BranchCount),(EndPoints.length-1));
     while(Math.pow(2,BranchCount)-1<=(EndPoints.length)){
         BranchCount += 1;
     }
-    DChange = DiagonalLength/BranchCount
-    console.log(X,Y)
+    DChange = DiagonalLength/BranchCount;
+    console.log(X,Y);
     var addPoints = [[X,Y,X+DChange,Y+DChange],[X,Y,X+DChange,Y-DChange],[X+DChange,Y+DChange,X+400,Y+DChange],[X+DChange,Y-DChange,X+400,Y-DChange]];
     var addEnds = [[addPoints[2][2],addPoints[2][3]],[addPoints[3][2],addPoints[3][3]]]; // Each End Points
-    console.log("Branch",BranchCount)
-    console.log("Befor",EndPoints)
-    console.log("add",addEnds)
+    console.log("Branch",BranchCount);
+    console.log("Befor",EndPoints);
+    console.log("add",addEnds);
     StartAndEndPoint = StartAndEndPoint.concat(addPoints);
     EndPoints = EndPoints.concat(addEnds);
-    console.log("added",EndPoints)
+    console.log("added",EndPoints);
     BranchCount += 1;
+}
+
+function DelBranch(){
+    console.log("del")
 }
 
 function FirstDrow(){
@@ -51,6 +57,7 @@ function onClick(e) {
         var PointY = EndPoints[i][1];
         if(PointX-5 < x && x < PointX+5){
             if(PointY-5 < y && y < PointY+5){// width and height +- 5 is ok
+                EdittingBranch = i;
                 OnClickEndPoint()
             }
         }
@@ -61,16 +68,7 @@ function onClick(e) {
 
 function OnClickEndPoint(){
     console.log("clickEndPoint")
-    var objDlg = new Window("dialog", "ダイアログのタイトル", [0,0,400,250]);
-    //　固定テキスト
-    var objStText01 = objDlg.add("statictext", [20,20,380,40], "固定テキスト");
-    //　テキストボックス
-    var objTxtbox01= objDlg.add("edittext", [20, 70, 315, 90], "入力してください。");
-    //　チェックボックス
-    var objChkbox01= objDlg.add("checkbox", [30, 120, 140, 140], "チェック項目");
-    //　ラジオボタン
-    var objBtn01= objDlg.add("radiobutton", [30, 150, 140, 170], "ボタン1");
-    var objBtn02= objDlg.add("radiobutton", [130, 150, 240, 170], "ボタン2");
+    dialog.showModal()
     
 }
 
@@ -81,12 +79,33 @@ function DrowBox(){
     }
 }
 
+function DialogClose(){
+    var RadioB = document.getElementById( "RadioBs" ) ;
+    var RadioCondition = RadioB.condition ;
+    var RValue = RadioCondition.value ;
+    console.log(RValue)
+    if(RValue = "add"){
+        MakeBranch(EdittingBranch);
+        FirstDrow()
+        DrowBox()
+    }
+    else if(RValue = "del"){
+        DelBranch(EdittingBranch);
+    }
+    EdittingBranch = 0;
+    dialog.close();
+}
+
+
 canvas.addEventListener('click', onClick, false);
+dialog = document.querySelector('dialog');
+btn_close = document.getElementById('close');
+btn_close.addEventListener('click',DialogClose,false);
 
 ChangeCanvasSize()
 MakeBranch(0)
-MakeBranch(4)
-MakeBranch(3)
+MakeBranch(1)
+MakeBranch(2)
 FirstDrow()
 DrowBox()
 console.log(StartAndEndPoint);
