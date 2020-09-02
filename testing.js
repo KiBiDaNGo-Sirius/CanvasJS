@@ -7,17 +7,30 @@ var Cheight = 600; //初期高さニャン
 //シナリオ図の作成用変数だニャン
 var StartAndEndPoint = [[0,300,400,300]]; //[Sx,Sy,Ex,Ey]　線の終始
 var EndPoints = [[400,300]]; //list of End of Branch　枝の最後
+var TextAndPlace = [];
 var DiagonalLength = 200; //次の枝と枝の幅の初期値だニャン 200x2
 var LineLength = 400; //枝の長さだニャン
 var EdittingBranch = 0; //編集する枝のindex保管用変数だニャン
+var EdittingText = 0;
+var ready = false;
+
 
 //canvas上でのマウス操作時の情報取得だニャン
 canvas.addEventListener('click', onClick, false);
 
 //枝編集ボタンを押したときのダイアログなどの変数だニャン
-dialog = document.querySelector('dialog');
-btn_close = document.getElementById('close');
-btn_close.addEventListener('click',DialogClose,false);
+var Bdialog = document.getElementById('BranchDialog');
+console.log("Bdialog",Bdialog);
+var Branch_close = document.getElementById('Bclose');
+Branch_close.addEventListener('click',BDialogClose,false);
+
+//TextEdit
+var Tdialog = document.getElementById('TextDialog');
+console.log("Tdialog",Bdialog);
+var EditButton = document.getElementById('TextEdit');
+EditButton.addEventListener('click',TEdit,false);
+var EditButton = document.getElementById('Tclose');
+EditButton.addEventListener('click',TDialogClose,false);
 
 function MakeBranch(BranchNum){
     var X = EndPoints[BranchNum][0];
@@ -30,13 +43,15 @@ function MakeBranch(BranchNum){
     }
     DChange = DiagonalLength/Math.pow(2,BranchCount-1);
     console.log(X,Y);
-    var addPoints = [[X,Y,X+DChange,Y-DChange],[X+DChange,Y-DChange,X+LineLength,Y-DChange],[X,Y,X+DChange,Y+DChange],[X+DChange,Y+DChange,X+LineLength,Y+DChange]];
+    var addPoints = [[X,Y,X+100,Y-DChange],[X+100,Y-DChange,X+LineLength,Y-DChange],[X,Y,X+100,Y+DChange],[X+100,Y+DChange,X+LineLength,Y+DChange]];
     var addEnds = [[addPoints[1][2],addPoints[1][3]],[addPoints[3][2],addPoints[3][3]]]; // Each End Points
+    var addTPlace = [[X,Y,0,"",""],[X+100,Y-DChange,1,"",""],[X+100,Y+DChange,1,"",""]];
     console.log("Branch",BranchCount);
     console.log("Befor",EndPoints);
     console.log("add",addEnds);
     StartAndEndPoint = StartAndEndPoint.concat(addPoints);
     EndPoints = EndPoints.concat(addEnds);
+    TextAndPlace = TextAndPlace.concat(addTPlace);
     console.log("added",EndPoints);
     BranchCount += 1;
 }
@@ -48,29 +63,40 @@ function DelBranch(){
     //console.log("BF",BeforEnd,"SP",StartPoints);
     var OtherEndPoint;
     if(EdittingBranch%2==1){
-        OtherEndPoint = [StartAndEndPoint[EdittingBranch*2+2][2],StartAndEndPoint[EdittingBranch*2+2][3]]
-        StartAndEndPoint.splice(EdittingBranch*2-1,4);        
+        OtherEndPoint = [StartAndEndPoint[EdittingBranch*2+2][2],StartAndEndPoint[EdittingBranch*2+2][3]];
+        var StartPint =  [StartAndEndPoint[EdittingBranch*2][0],StartAndEndPoint[EdittingBranch*2][1]];
+        StartAndEndPoint.splice(EdittingBranch*2-1,4); 
     }else{
-        OtherEndPoint = [StartAndEndPoint[EdittingBranch*2-2][2],StartAndEndPoint[EdittingBranch*2-2][3]]
+        OtherEndPoint = [StartAndEndPoint[EdittingBranch*2-2][2],StartAndEndPoint[EdittingBranch*2-2][3]];
+        var StartPint =  [StartAndEndPoint[EdittingBranch*2][0],StartAndEndPoint[EdittingBranch*2][1]];
         StartAndEndPoint.splice(EdittingBranch*2-3,4);
     }
-    var OtherEnd = TwoDindex(EndPoints,OtherEndPoint);
-    console.log(OtherEndPoint)
+    
+    var TextIndex = TwoDindex(TextAndPlace,StartPint);
+    TextAndPlace.splice(TextIndex-(TextIndex%3),3);
+    console.log("textindex",TextIndex,StartPint);
+    console.log("TP",TextAndPlace);
+    console.log("End",EndPoints);
     EndPoints.splice(EdittingBranch,1);
+    var OtherEnd = TwoDindex(EndPoints,OtherEndPoint);
+    console.log("otherend",OtherEnd)
     EndPoints.splice(OtherEnd,1);
     //EndPoints.splice(BeforEnd,1);
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    FirstDrow();
-    DrowBox();
+    ReWrite();
     console.log("del");
     console.log("deled",EndPoints);
 }
+
 function AddBranch(){
     MakeBranch(EdittingBranch);
+    ReWrite();
+}
+function ReWrite(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     FirstDrow();
     DrowBox();
+    WriteText();
 }
-
 function FirstDrow(){
     for(let i = 0;i<StartAndEndPoint.length;i++){
         ctx.beginPath();
@@ -104,8 +130,8 @@ function onClick(e) {
 }
 
 function OnClickEndPoint(){
-    console.log("clickEndPoint")
-    dialog.showModal()
+    console.log("clickEndPoint");
+    Bdialog.showModal();
     
 }
 
@@ -116,7 +142,7 @@ function DrowBox(){
     }
 }
 
-function DialogClose(){
+function BDialogClose(){
     var RadioB = document.getElementById( "RadioBs" ) ;
     var RadioCondition = RadioB.condition ;
     var RValue = RadioCondition.value ;
@@ -128,7 +154,7 @@ function DialogClose(){
         DelBranch();
     }
     EdittingBranch = 0;
-    dialog.close();
+    Bdialog.close();
 }
 
 function TwoDindex(List,Elments){
@@ -140,8 +166,46 @@ function TwoDindex(List,Elments){
     return "error"
 }
 
-ChangeCanvasSize()
-MakeBranch(0)
-FirstDrow()
-DrowBox()
+function WriteText(){
+    for(let i = 0;i<TextAndPlace.length;i++){
+        let TextNum = i*2;
+        ctx.fillText(TextNum+TextAndPlace[i][3],TextAndPlace[i][0],TextNum+TextAndPlace[i][1]-20,100);
+        TextNum = i*2 + 1;
+        ctx.fillText(TextNum+TextAndPlace[i][4],TextAndPlace[i][0],TextNum+TextAndPlace[i][1]+20,100);
+    }
+    
+}
+
+function TEdit(){
+    ready = true;
+    for(let i = 0;i<TextAndPlace.length;i++){
+        EdittingText = i;
+        while(true){
+            if(ready){
+                console.log("BE",EdittingText)
+                Tdialog.showModal();
+                ready = false;
+                break
+            }
+        }
+        
+    }
+} 
+function TDialogClose(){
+    console.log("Editing")
+    console.log("ET",EdittingText);
+    UpperText = document.getElementById('above');
+    LowerText = document.getElementById('below');
+    TextAndPlace[EdittingText][3] = UpperText;
+    TextAndPlace[EdittingText][4] = LowerText;
+    Tdialog.close();
+    ReWrite();
+    ready = true;
+}
+
+ChangeCanvasSize();
+MakeBranch(0);
+FirstDrow();
+DrowBox();
+WriteText();
 console.log(StartAndEndPoint);
