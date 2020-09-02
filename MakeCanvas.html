@@ -12,14 +12,12 @@
         <!--canvas-->
         <canvas id="canvas"></canvas>
 
-        <!--text Edit Button-->
-        <button id = "TextEdit">TextEdit</button>
         <!--Branch Dialog page つまり　ここで枝の追加とかさくじょとかするにゃん-->
         <dialog id = "BranchDialog">
             <p>なにをしますか？</p>
             <form id ="RadioBs">
-                <input type="radio" name="condition" value="add" />追加
-                <input type="radio" name="condition" value="del"/>削除
+                <input type="radio" name="condition" value="branch" />ブランチの追加
+                <input type="radio" name="condition" value="line"/>直線の追加
                 <input type="radio" name="condition" value="nothing"/>何もしない
             </form>
             <button id="Bclose">実行</button>
@@ -29,10 +27,9 @@
         <dialog id = "TextDialog">
             <p></p>
             <form id ="Texts">
-                <input type="text" name="condition" value="above" id = "above"/>上のやつ<br>
-                <input type="text" name="condition" value="below" id = "below"/>下のやつ
+                <input type="text" name="condition" id = "above"/>テキストを入力してください
             </form>
-            <button id="Tclose">次のテキスト</button>
+            <button id="Tclose">OK</button>
         </dialog>
 
         <!--lode JavaScript srcに注意-->
