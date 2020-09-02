@@ -32,7 +32,9 @@ EditButton.addEventListener('click',TEdit,false);
 var EditButton = document.getElementById('Tclose');
 EditButton.addEventListener('click',TDialogClose,false);
 
-function MakeBranch(BranchNum){
+//ブランチ編集用
+
+function AddBranch(BranchNum){
     var X = EndPoints[BranchNum][0];
     var Y = EndPoints[BranchNum][1];
     var BranchCount = 0;
@@ -54,13 +56,10 @@ function MakeBranch(BranchNum){
     TextAndPlace = TextAndPlace.concat(addTPlace);
     console.log("added",EndPoints);
     BranchCount += 1;
+    ReWrite();
 }
 
-function DelBranch(){
-    //var StartPoints = [StartAndEndPoint[EdittingBranch*2-1][0],StartAndEndPoint[EdittingBranch*2-1][1]]; #ここまで消すべきか相談
-    //var BeforEnd = TwoDindex(EndPoints,StartPoints);
-    //console.log(EndPoints);
-    //console.log("BF",BeforEnd,"SP",StartPoints);
+function DelBranch(EdittingBranch){
     var OtherEndPoint;
     if(EdittingBranch%2==1){
         OtherEndPoint = [StartAndEndPoint[EdittingBranch*2+2][2],StartAndEndPoint[EdittingBranch*2+2][3]];
@@ -81,36 +80,13 @@ function DelBranch(){
     var OtherEnd = TwoDindex(EndPoints,OtherEndPoint);
     console.log("otherend",OtherEnd)
     EndPoints.splice(OtherEnd,1);
-    //EndPoints.splice(BeforEnd,1);
     ReWrite();
     console.log("del");
     console.log("deled",EndPoints);
 }
 
-function AddBranch(){
-    MakeBranch(EdittingBranch);
-    ReWrite();
-}
-function ReWrite(){
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    FirstDrow();
-    DrowBox();
-    WriteText();
-}
-function FirstDrow(){
-    for(let i = 0;i<StartAndEndPoint.length;i++){
-        ctx.beginPath();
-        ctx.moveTo(StartAndEndPoint[i][0],StartAndEndPoint[i][1]);//start
-        ctx.lineTo(StartAndEndPoint[i][2],StartAndEndPoint[i][3]);//end
-        ctx.stroke();
-    }
-}
-
-function ChangeCanvasSize(){
-    canvas.width = Cwidth;
-    canvas.height = Cheight;
-}
-  
+//クリックによって発生するイベントと関数--------------
+//クリック場所の指定
 function onClick(e) {
     var rect = e.target.getBoundingClientRect();
     var x = e.clientX - rect.left;
@@ -126,56 +102,30 @@ function onClick(e) {
         }
     }
     console.log("click");
-    
 }
-
+//エンドボタンを押した際の行動
 function OnClickEndPoint(){
     console.log("clickEndPoint");
-    Bdialog.showModal();
-    
+    Bdialog.showModal(); 
 }
 
-function DrowBox(){
-    for(let i = 0;i < EndPoints.length;i++){
-        ctx.fillStyle = "rgb(0, 0, 255)"
-        ctx.fillRect(EndPoints[i][0]-5,EndPoints[i][1]-5,10,10)
-    }
-}
-
+//Endボタンを押した際のダイアログ結果とその後の行動
 function BDialogClose(){
     var RadioB = document.getElementById( "RadioBs" ) ;
     var RadioCondition = RadioB.condition ;
     var RValue = RadioCondition.value ;
     console.log(RValue)
     if(RValue == "add"){
-        AddBranch();
+        AddBranch(EdittingBranch);
     }
     else if(RValue == "del"){
-        DelBranch();
+        DelBranch(EdittingBranch);
     }
     EdittingBranch = 0;
     Bdialog.close();
 }
 
-function TwoDindex(List,Elments){
-    for(let i = 0;i<List.length;i++){
-        if(Elments[0]==List[i][0] && Elments[1]==List[i][1]){
-            return i
-        }
-    }
-    return "error"
-}
-
-function WriteText(){
-    for(let i = 0;i<TextAndPlace.length;i++){
-        let TextNum = i*2;
-        ctx.fillText(TextNum+TextAndPlace[i][3],TextAndPlace[i][0],TextNum+TextAndPlace[i][1]-20,100);
-        TextNum = i*2 + 1;
-        ctx.fillText(TextNum+TextAndPlace[i][4],TextAndPlace[i][0],TextNum+TextAndPlace[i][1]+20,100);
-    }
-    
-}
-
+//テキストボタンを押した際の行動
 function TEdit(){
     ready = true;
     for(let i = 0;i<TextAndPlace.length;i++){
@@ -191,6 +141,7 @@ function TEdit(){
         
     }
 } 
+//テキストボタンを押した際のダイアログ結果とその行動
 function TDialogClose(){
     console.log("Editing")
     console.log("ET",EdittingText);
@@ -203,9 +154,57 @@ function TDialogClose(){
     ready = true;
 }
 
+//描画用-----------------------------------------------
+//
+function ReWrite(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    FirstDrow();
+    DrowBox();
+    WriteText();
+}
+//
+function FirstDrow(){
+    for(let i = 0;i<StartAndEndPoint.length;i++){
+        ctx.beginPath();
+        ctx.moveTo(StartAndEndPoint[i][0],StartAndEndPoint[i][1]);//start
+        ctx.lineTo(StartAndEndPoint[i][2],StartAndEndPoint[i][3]);//end
+        ctx.stroke();
+    }
+}
+//
+function DrowBox(){
+    for(let i = 0;i < EndPoints.length;i++){
+        ctx.fillStyle = "rgb(0, 0, 255)"
+        ctx.fillRect(EndPoints[i][0]-5,EndPoints[i][1]-5,10,10)
+    }
+}
+//
+function WriteText(){
+    for(let i = 0;i<TextAndPlace.length;i++){
+        let TextNum = i*2;
+        ctx.fillText(TextNum+TextAndPlace[i][3],TextAndPlace[i][0],TextNum+TextAndPlace[i][1]-20,100);
+        TextNum = i*2 + 1;
+        ctx.fillText(TextNum+TextAndPlace[i][4],TextAndPlace[i][0],TextNum+TextAndPlace[i][1]+20,100);
+    }
+    
+}
+//
+
+//
+//
+function ChangeCanvasSize(){
+    canvas.width = Cwidth;
+    canvas.height = Cheight;
+}
+
+function TwoDindex(List,Elments){
+    for(let i = 0;i<List.length;i++){
+        if(Elments[0]==List[i][0] && Elments[1]==List[i][1]){
+            return i
+        }
+    }
+    return "error"
+}
 ChangeCanvasSize();
-MakeBranch(0);
-FirstDrow();
-DrowBox();
-WriteText();
+AddBranch(0);
 console.log(StartAndEndPoint);
