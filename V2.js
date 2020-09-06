@@ -24,11 +24,6 @@ console.log("Bdialog",Bdialog);
 var Branch_close = document.getElementById('Bclose');
 Branch_close.addEventListener('click',BDialogClose,false);
 
-//TextEdit
-var Tdialog = document.getElementById('TextDialog');
-console.log("Tdialog",Bdialog);
-var EditButton = document.getElementById('Tclose');
-EditButton.addEventListener('click',TDialogClose,false);
 
 //ブランチ編集用
 
@@ -109,8 +104,8 @@ function onClick(e) {
     var y = e.clientY - rect.top;
     var acceptLength = 7;
     for(let i = 0;i<EndPoints.length;i++){
-        let PointX = EndPoints[i][0];
-        let PointY = EndPoints[i][1];
+        let PointX = EndPoints[i][1];
+        let PointY = EndPoints[i][0];
         if(PointX-acceptLength < x && x < PointX+acceptLength){
             if(PointY-acceptLength < y && y < PointY+acceptLength){// width and height +- 5 is ok
                 if(EndPoints[i][2] == 0){
@@ -122,8 +117,8 @@ function onClick(e) {
         }
     }
     for(let i = 0;i<TextAndPlace.length;i++){
-        let PointX = TextAndPlace[i][0];
-        let PointY = TextAndPlace[i][1];
+        let PointX = TextAndPlace[i][1];
+        let PointY = TextAndPlace[i][0];
         if(PointX-acceptLength < x && x < PointX+acceptLength){
             if(PointY-acceptLength < y && y < PointY+acceptLength){// width and height +- 5 is ok
                 EdittingText = i;
@@ -133,8 +128,8 @@ function onClick(e) {
         }
     }
     for(let k = 0;k<StartAndEndPoint.length;k++){
-        let PointX = StartAndEndPoint[k][2];
-        let PointY = StartAndEndPoint[k][3];
+        let PointX = StartAndEndPoint[k][3];
+        let PointY = StartAndEndPoint[k][2];
         if(k%2==0){
             console.log("even")
             if(PointX-400 < x && x < PointX){
@@ -190,8 +185,8 @@ function ReWrite(){
 function FirstDrow(){
     for(let i = 0;i<StartAndEndPoint.length;i++){
         ctx.beginPath();
-        ctx.moveTo(StartAndEndPoint[i][0],StartAndEndPoint[i][1]);//start
-        ctx.lineTo(StartAndEndPoint[i][2],StartAndEndPoint[i][3]);//end
+        ctx.moveTo(StartAndEndPoint[i][1],StartAndEndPoint[i][0]);//start
+        ctx.lineTo(StartAndEndPoint[i][3],StartAndEndPoint[i][2]);//end
         ctx.stroke();
     }
 }
@@ -200,17 +195,17 @@ function DrowBox(){
     for(let i = 0;i < EndPoints.length;i++){
         if(EndPoints[i][2] == 0){
             ctx.fillStyle = "rgb(0, 0, 255)"
-            ctx.fillRect(EndPoints[i][0]-5,EndPoints[i][1]-5,10,10)
+            ctx.fillRect(EndPoints[i][1]-5,EndPoints[i][0],10,10)
         }  
     }
     for(let j = 0;j < TextAndPlace.length;j++){
         if(j%2 == 0){
             ctx.fillStyle = "rgb(255, 0, 0)"
-            ctx.fillRect(TextAndPlace[j][0]-5,TextAndPlace[j][1]-5,10,10)
+            ctx.fillRect(TextAndPlace[j][1],TextAndPlace[j][0],10,10)
             console.log(TextAndPlace[j][1])
         }else{
             ctx.fillStyle = "rgb(255, 0, 0)"
-            ctx.fillRect(TextAndPlace[j][0]-5,TextAndPlace[j][1]+5,10,10)
+            ctx.fillRect(TextAndPlace[j][1],TextAndPlace[j][0],10,10)
         }
         
     }
@@ -224,15 +219,15 @@ function WriteText(){
     for(let i = 0;i<TextAndPlace.length;i++){
         let TextNum = i;
         if(i%6==0){
-            ctx.fillText(TextNum+TextAndPlace[i][2],TextAndPlace[i][0]-45,TextAndPlace[i][1]-30,100);
+            ctx.fillText(TextNum+TextAndPlace[i][2],TextAndPlace[i][1],TextAndPlace[i][0],100);
         }else if(i%6==1){
-            ctx.fillText(TextNum+TextAndPlace[i][2],TextAndPlace[i][0]-45,TextAndPlace[i][1],100);
+            ctx.fillText(TextNum+TextAndPlace[i][2],TextAndPlace[i][1],TextAndPlace[i][0],100);
         }
         else{
             if(i%2==0){
-                ctx.fillText(TextNum+TextAndPlace[i][2],TextAndPlace[i][0]+25,TextAndPlace[i][1]-10,100);
+                ctx.fillText(TextNum+TextAndPlace[i][2],TextAndPlace[i][1],TextAndPlace[i][0],100);
             }else{
-                ctx.fillText(TextNum+TextAndPlace[i][2],TextAndPlace[i][0]+25,TextAndPlace[i][1],100);
+                ctx.fillText(TextNum+TextAndPlace[i][2],TextAndPlace[i][1],TextAndPlace[i][0],100);
             }
             
         }
