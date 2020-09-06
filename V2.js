@@ -1,8 +1,8 @@
 //canvas情報取得だニャン
 var canvas = document.getElementById("canvas");
 var ctx = canvas.getContext("2d"); //何か描画する際は ctx.　にするにゃん
-var Cwidth = 5000; //初期幅ニャン
-var Cheight = 1300; //初期高さニャン
+var Cwidth = 1800; //初期幅ニャン
+var Cheight = 5000; //初期高さニャン
 
 //シナリオ図の作成用変数だニャン
 var StartAndEndPoint = [[0,650,400,650]]; //[Sx,Sy,Ex,Ey]　線の終始
@@ -17,11 +17,17 @@ var ready = false;
 //canvas上でのマウス操作時の情報取得だニャン
 canvas.addEventListener('click', onClick, false);
 
-//枝編集ボタンを押したときのダイアログなどの変数だニャン
+//初期生成時のダイアログ関係
 var Bdialog = document.getElementById('BranchDialog');
 console.log("Bdialog",Bdialog);
 var Branch_close = document.getElementById('Bclose');
 Branch_close.addEventListener('click',BDialogClose,false);
+
+//決断、やるべきことを書くダイアログ
+var Ddialog = document.getElementById('decisionDialog');
+console.log("Ddialog",Bdialog);
+var EditButton = document.getElementById('Dclose');
+EditButton.addEventListener('click',DDialogClose,false);
 
 
 //ブランチ編集用
@@ -32,21 +38,22 @@ function AddBranch(BranchNum,text){
     var BranchCount = 0;
     console.log("WTF");
     console.log(Math.pow(2,BranchCount),(EndPoints.length));
-    while(Math.pow(2,BranchCount)<=(EndPoints.length)){
+    while(Math.pow(2,BranchCount)-1<=(EndPoints.length)){
         BranchCount += 1;
     }
-    DChange = DiagonalLength/Math.pow(2,BranchCount-1);
+    DChange = DiagonalLength/(Math.pow(2,BranchCount-1)-1);
     console.log(X,Y);
     var addPoints = [[X,Y,X+100,Y-DChange],[X+100,Y-DChange,X+LineLength,Y-DChange],[X,Y,X+100,Y+DChange],[X+100,Y+DChange,X+LineLength,Y+DChange]];
     var addEnds = [[addPoints[1][2],addPoints[1][3],0],[addPoints[3][2],addPoints[3][3],0]]; // Each End Points
     console.log(Y+DChange);
-    var addTPlace = [[X,Y-30,text]];
+    var addTPlace = [[X,Y,text]];
     console.log("Branch",BranchCount);
     console.log("Befor",EndPoints);
     console.log("add",addEnds);
     StartAndEndPoint = StartAndEndPoint.concat(addPoints);
     EndPoints = EndPoints.concat(addEnds);
     TextAndPlace = TextAndPlace.concat(addTPlace);
+    EndPoints[BranchNum][2] = 1
     console.log("added",EndPoints);
     ReWrite();
 }
@@ -107,16 +114,14 @@ function onClick(e) {
         if(PointX-acceptLength < x && x < PointX+acceptLength){
             if(PointY-acceptLength < y && y < PointY+acceptLength){// width and height +- 5 is ok
                 if(EndPoints[i][2] == 0){
-                    EdittingBranch = i;
+                    EdittingText = i;
                     console.log("clickEndB");
-                    ctx.scale(0.3,0.3);
-                    ReWrite();
-                    
+                    Ddialog.showModal();                    
                 }
             }
         }
     }
-    for(let i = 0;i<TextAndPlace.length;i++){
+    /* for(let i = 0;i<TextAndPlace.length;i++){
         let PointX = TextAndPlace[i][1];
         let PointY = TextAndPlace[i][0];
         if(PointX-acceptLength < x && x < PointX+acceptLength){
@@ -126,8 +131,8 @@ function onClick(e) {
                 Tdialog.showModal(); 
             }
         }
-    }
-    for(let k = 0;k<StartAndEndPoint.length;k++){
+    } */
+    /* for(let k = 0;k<StartAndEndPoint.length;k++){
         let PointX = StartAndEndPoint[k][3];
         let PointY = StartAndEndPoint[k][2];
         if(k%2==0){
@@ -143,7 +148,7 @@ function onClick(e) {
                 }
             }
         }
-    }
+    } */
     console.log("click",x,y);
 }
 
@@ -156,23 +161,23 @@ function BDialogClose(){
     var B3 = document.getElementById("if3").value;
     if(B1 != ""){
         AddBranch(0,B1);
-    }else if(B2 != ""){
+    }
+    if(B2 != ""){
         AddBranch(1,B2);
-    }else if(B3 != ""){
+    }
+    if(B3 != ""){
         AddBranch(2,B3);
     }
     ReWrite();
     Bdialog.close();
 }
 
-//テキストボタンを押した際のダイアログ結果とその行動
-function TDialogClose(){
+//青ボタンを押したときのダイアログの結果
+function DDialogClose(){
     console.log("EditingT")
-    text = document.getElementById('above').value;
-    console.log("ET",EdittingText,text);
-    TextAndPlace[EdittingText][2] = text;
-    Tdialog.close();
-    ReWrite();
+    decision = document.getElementById("decision").value;
+    ToDo = document.getElementById("ToDo").value;
+
 }
 
 //描画用-----------------------------------------------
@@ -203,11 +208,11 @@ function DrowBox(){
     for(let j = 0;j < TextAndPlace.length;j++){
         if(j%2 == 0){
             ctx.fillStyle = "rgb(255, 0, 0)"
-            ctx.fillRect(TextAndPlace[j][1],TextAndPlace[j][0],10,10)
+            ctx.fillRect(TextAndPlace[j][1]-5,TextAndPlace[j][0]-5,10,10)
             console.log(TextAndPlace[j][1])
         }else{
             ctx.fillStyle = "rgb(255, 0, 0)"
-            ctx.fillRect(TextAndPlace[j][1],TextAndPlace[j][0],10,10)
+            ctx.fillRect(TextAndPlace[j][1]-5,TextAndPlace[j][0]-5,10,10)
         }
         
     }
@@ -220,20 +225,7 @@ function WriteText(){
     ctx.textBaseline = "top";
     for(let i = 0;i<TextAndPlace.length;i++){
         let TextNum = i;
-        if(i%6==0){
-            ctx.fillText(TextNum+TextAndPlace[i][2],TextAndPlace[i][1],TextAndPlace[i][0],100);
-        }else if(i%6==1){
-            ctx.fillText(TextNum+TextAndPlace[i][2],TextAndPlace[i][1],TextAndPlace[i][0],100);
-        }
-        else{
-            if(i%2==0){
-                ctx.fillText(TextNum+TextAndPlace[i][2],TextAndPlace[i][1],TextAndPlace[i][0],100);
-            }else{
-                ctx.fillText(TextNum+TextAndPlace[i][2],TextAndPlace[i][1],TextAndPlace[i][0],100);
-            }
-            
-        }
-        
+        ctx.fillText(TextNum+TextAndPlace[i][2],TextAndPlace[i][1]+40,TextAndPlace[i][0]-10,100);        
     }
     
 }

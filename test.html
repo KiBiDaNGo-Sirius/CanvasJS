@@ -15,7 +15,7 @@
         <!--Branch Dialog page つまり　ここで枝の追加とかさくじょとかするにゃん-->
         <dialog id = "BranchDialog" width="1200">
             <p>やりたいこと、条件を入力してください</p>
-            <form id ="RadioBs">
+            <form id ="inputs">
                 <textarea id="WantToDo"></textarea>やりたいこと<br>
                 <input type="text" name="if1" id = "if1">条件1<br>
                 <input type="text" name="if2" id = "if2">条件2<br>
@@ -23,6 +23,15 @@
             </form>
             <canvas id="canvas" class="dialogCanvas"></canvas>
             <button id="Bclose">作成</button>
+        </dialog>
+        <!--決断内容とやること-->
+        <dialog id = "decisionDialog" width="1200">
+            <p>あなたがその時にするであろう決断とその時にやるべきことを入力してください</p>
+            <form id ="inputs">
+                <input type="text" name="decision" id = "decision">決断<br>
+                <input type="text" name="ToDo" id = "ToDo">やるべきこと<br>
+            </form>
+            <button id="Dclose">作成</button>
         </dialog>
         <!--lode JavaScript srcに注意-->
         <script type="text/javascript" src="V2.js" ></script>
