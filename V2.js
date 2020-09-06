@@ -10,7 +10,6 @@ var EndPoints = [[400,650,0]]; //list of End of Branch　枝の最後
 var TextAndPlace = [];
 var DiagonalLength = 320; //次の枝と枝の幅の初期値だニャン 200x2
 var LineLength = 400; //枝の長さだニャン
-var EdittingBranch = 0; //編集する枝のindex保管用変数だニャン
 var EdittingText = 0;
 var ready = false;
 
@@ -27,7 +26,7 @@ Branch_close.addEventListener('click',BDialogClose,false);
 
 //ブランチ編集用
 
-function AddBranch(BranchNum){
+function AddBranch(BranchNum,text){
     var X = EndPoints[BranchNum][0];
     var Y = EndPoints[BranchNum][1];
     var BranchCount = 0;
@@ -41,7 +40,7 @@ function AddBranch(BranchNum){
     var addPoints = [[X,Y,X+100,Y-DChange],[X+100,Y-DChange,X+LineLength,Y-DChange],[X,Y,X+100,Y+DChange],[X+100,Y+DChange,X+LineLength,Y+DChange]];
     var addEnds = [[addPoints[1][2],addPoints[1][3],0],[addPoints[3][2],addPoints[3][3],0]]; // Each End Points
     console.log(Y+DChange);
-    var addTPlace = [[X,Y-30,""],[X,Y+20,""],[X+100,Y-DChange-20,""],[X+100,Y-DChange+20,""],[X+100,Y+DChange-20,""],[X+100,Y+DChange+20,""]];
+    var addTPlace = [[X,Y-30,text]];
     console.log("Branch",BranchCount);
     console.log("Befor",EndPoints);
     console.log("add",addEnds);
@@ -49,7 +48,6 @@ function AddBranch(BranchNum){
     EndPoints = EndPoints.concat(addEnds);
     TextAndPlace = TextAndPlace.concat(addTPlace);
     console.log("added",EndPoints);
-    EndPoints[EdittingBranch][2] = 1;
     ReWrite();
 }
 
@@ -111,7 +109,9 @@ function onClick(e) {
                 if(EndPoints[i][2] == 0){
                     EdittingBranch = i;
                     console.log("clickEndB");
-                    Bdialog.showModal(); 
+                    ctx.scale(0.3,0.3);
+                    ReWrite();
+                    
                 }
             }
         }
@@ -150,16 +150,18 @@ function onClick(e) {
 //Endボタンを押した際のダイアログ結果とその後の行動
 function BDialogClose(){
     var RadioB = document.getElementById( "RadioBs" ) ;
-    var RadioCondition = RadioB.condition ;
-    var RValue = RadioCondition.value ;
-    console.log(RValue)
-    if(RValue == "branch"){
-        AddBranch(EdittingBranch);
+    var WantToDo = document.getElementById("WantToDo").value;
+    var B1 = document.getElementById("if1").value;
+    var B2 = document.getElementById("if2").value;
+    var B3 = document.getElementById("if3").value;
+    if(B1 != ""){
+        AddBranch(0,B1);
+    }else if(B2 != ""){
+        AddBranch(1,B2);
+    }else if(B3 != ""){
+        AddBranch(2,B3);
     }
-    else if(RValue == "line"){
-        Addline(EdittingBranch);
-    }
-    EdittingBranch = 0;
+    ReWrite();
     Bdialog.close();
 }
 
@@ -253,5 +255,5 @@ function TwoDindex(List,Elments){
     return "error"
 }
 ChangeCanvasSize();
-AddBranch(0);
+Bdialog.showModal(); 
 console.log(StartAndEndPoint);
